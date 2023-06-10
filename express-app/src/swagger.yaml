@@ -1,0 +1,188 @@
+openapi: 3.0.0
+
+info:
+  title: Sample API
+  description: API documentation for Main API
+  version: 1.0.0
+
+servers:
+  - url: "{protocol}://localhost:4000"
+    description: Localhost server for the Main API
+    variables:
+      protocol:
+        default: http
+        enum:
+          - http
+          - https
+  - url: https://findateacher2022.herokuapp.com
+    description: Production server for the Main API
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apikey
+      in: cookie
+      name: token
+
+security:
+  - cookieAuth: []
+
+paths:
+  /:
+    get:
+      tags:
+        - Server info
+      summary: Returns the status of server
+      description: Home route
+      responses:
+        "200": #status code
+          description: A string message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: #properties is only for objects
+                  status:
+                    type: number
+                  message:
+                    type: string
+  /token-testing/{token}:
+    get:
+      tags:
+        - Server info
+      summary: Returns the token passed
+      description: Route to test params
+      parameters:
+        - name: token
+          default: 5
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200": #status code
+          description: Returns number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: number
+  /posts:
+    get:
+      tags:
+        - Array testing
+      summary: Returns the list of posts
+      description: posts get route
+      responses:
+        "200": #status code
+          description: An array of all the posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties: #properties is only for objects
+                    id:
+                      type: number
+                    posted_by:
+                      type: string
+
+    post:
+      tags:
+        - Array testing
+      summary: Returns a boolean whether post is added or not
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      description: posts post route
+      requestBody:
+        description: takes a post or array of posts to add
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: number
+                posted_by:
+                  type: string
+      responses:
+        "200": #status code
+          description: An array of all the posts
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /filteredPosts:
+    get:
+      tags:
+        - Array testing
+      summary: Returns the list of filteredPosts
+      description: posts get route with query params
+      parameters:
+        - name: id
+          description: id of the post to query
+          default: 1
+          required: true
+          in: query
+          schema:
+            type: integer
+        - name: posted_by
+          description: posted_by of the post to query
+          default: "teacher"
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200": #status code
+          description: An array of filtered the posts by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties: #properties is only for objects
+                    id:
+                      type: number
+                    posted_by:
+                      type: string
+  /userProfileUpload:
+    post:
+      tags:
+        - file testing
+      summary: Returns a boolean whether user profile uploaded or not
+      # consumes:
+      #   - application/json
+      # produces:
+      #   - application/json
+      parameters:
+        - in: header
+          name: auth
+      description: image handling route
+      requestBody:
+        description: takes the profile image of the user
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              # type: string
+              # format: binary
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200": #status code
+          description: A boolean value whether file uploaded or not
+          content:
+            application/json:
+              schema:
+                type: boolean
